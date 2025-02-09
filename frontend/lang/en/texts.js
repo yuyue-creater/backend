@@ -1,0 +1,9 @@
+const storeText = "Store";
+const searchText = "Search";
+const wordText = "Word";
+const addWordText = "Add Word";
+const definitionText = "Definition";
+const generalErrorText = "Error occurred: ";
+const invalidWordText = "Word cannot be empty and cannot contain numbers";
+const storeErrorText = "An error occurred, could not store definition to server";
+const searchErrorText = "An error occurred, could not retrieve data from server";

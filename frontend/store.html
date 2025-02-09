@@ -4,20 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store</title>
+    <script src="lang/en/texts.js"></script>
     <script src="classes/utils.js" defer></script>
     <script src="store.js" defer></script>
 </head>
 <body>
-    <h1>Store</h1>
+    <h1 id="title"></h1>
     <form id="store">
-        <label for="word">Word</label>
+        <label id="word-label" for="word"></label>
         <input type="text" id="word"><br>
-        <label for="definition">Definition</label>
+        <label id="definition-label" for="definition"></label>
         <textarea id="definition"></textarea><br>
-        <input type="submit" id="submit" value="Add Word">
+        <input type="submit" id="submit">
     </form>
     <div>
-        <h2 id="response"></h2>
+        <p id="response"></p>
     </div>
 </body>
 </html>

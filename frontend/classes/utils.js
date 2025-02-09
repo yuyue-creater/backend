@@ -6,6 +6,10 @@ class Utils {
         document.getElementById(id).innerHTML = text;
     }
 
+    static setValue(id, text) {
+        document.getElementById(id).value = text;
+    }
+
     static async search(word) {
         try {
             const response = await fetch(`${Utils.fetchLink}?word=${word}`);        
@@ -30,18 +34,17 @@ class Utils {
                 // Set the response label
                 const message = JSON.parse(xhr.response).message;
                 if (message) responseLabel.innerHTML = message;
-                else responseLabel.innerHTML = "An error occurred, could not store definition to server";
+                else responseLabel.innerHTML = storeErrorText;
             }
-
             xhr.send(JSON.stringify({ word: word, definition: definition }));
 
         } catch (e) {
-            responseLabel.innerHTML = `Error occurred: ${e}`;
+            responseLabel.innerHTML = `${generalErrorText}${e}`;
         }
     }
 
     static isValid(word) {
-        if (word === "") return false;
+        if (word.trim() === "") return false;
         return !/\d/.test(word);
     }
 
