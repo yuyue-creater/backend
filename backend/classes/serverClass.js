@@ -88,7 +88,8 @@ class Server {
         // Check if word is valid
         if (!util.Utils.isValidWord(body.word)) {
             // Bad request code
-            res.writeHead(400, { [Server.contentType.type]: Server.contentType.plain }).end(`${body.word} is not a valid word.`);
+            res.writeHead(400, { [Server.contentType.type]: Server.contentType.json });
+            res.end(JSON.stringify({ message: `${body.word} is not a valid word.` }));
             return;
         }
         // Add to definitions
