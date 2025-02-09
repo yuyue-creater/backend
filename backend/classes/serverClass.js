@@ -59,7 +59,7 @@ class Server {
         const word = reqUrl.query.word;
         if (this.#dictionary.has(word)) {
             res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
-            res.end(JSON.stringify({ message: this.#dictionary.get(word) }));
+            res.end(JSON.stringify({ message: `Request #${this.#requestCount}: ${this.#dictionary.get(word)}` }));
             
         } else {
             res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
