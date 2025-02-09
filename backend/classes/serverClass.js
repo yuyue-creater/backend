@@ -1,5 +1,6 @@
 const http = require("http");
 const url = require("url");
+const util = require("./utilsClass");
 
 class Server {
 
@@ -32,7 +33,7 @@ class Server {
 
     #createServer() {
         this.#server = http.createServer((req, res) => {
-            this.#setupCORSHeader(res);
+            util.Utils.writeCORSHead(res, Server.contentType.type);
 
             // Handle options request
             if (req.method === "OPTIONS") {                
@@ -76,7 +77,7 @@ class Server {
             return;
         }
         // Get word from request
-        const body = await this.#parseBody(req);
+        const body = await util.Utils.parseBody(req);
 
         // Handle words already existing
         if (this.#dictionary.has(body.word)) {
@@ -85,38 +86,19 @@ class Server {
             return;
         }
         // Check if word is valid
-        if (!this.#isValidWord(body.word)) {
+        if (!util.Utils.isValidWord(body.word)) {
             // Bad request code
             res.writeHead(400, { [Server.contentType.type]: Server.contentType.plain }).end(`${body.word} is not a valid word.`);
             return;
         }
         // Add to definitions
         this.#dictionary.set(body.word, body.definition);
-        // Get current month and day
-        const date = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" });
+        
         // Send response
         res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
         res.end(JSON.stringify(
-            { message: `Request #${this.#requestCount} (Updated at ${date}, Total Entries = ${this.#dictionary.size}): Added '${body.word}' - ${body.definition}` }
+            { message: `Request #${this.#requestCount} (Updated at ${util.Utils.getCurrentDate()}, Total Entries = ${this.#dictionary.size}): Added '${body.word}' - ${body.definition}` }
         ));
-    }
-
-    #parseBody(req) {
-        return new Promise((res, rej) => {
-            let body = "";
-            req.on("data", chunk => body += chunk);
-            req.on("end", () => res(JSON.parse(body)));
-        });
-    }
-
-    #setupCORSHeader(res) {
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        res.setHeader("Access-Control-Allow-Headers", Server.contentType.type);
-    }
-
-    #isValidWord(word) {
-        return !/\d/.test(word); // If word has digit, word not valid
     }
 }
 
