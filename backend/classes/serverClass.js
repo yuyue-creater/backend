@@ -13,7 +13,7 @@ class Server {
     #port;
     #server;
     #endpoint;
-    #definitions = new Set();
+    #dictionary = new Map();
     #requestCount = 0;
 
     constructor(endpoint, port) {
@@ -56,9 +56,9 @@ class Server {
             return;
         }
         const word = reqUrl.query.word;
-        if (this.#definitions.has(word)) {
+        if (this.#dictionary.has(word)) {
             res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
-            res.end(JSON.stringify({ message: this.#definitions.get(word) }));
+            res.end(JSON.stringify({ message: this.#dictionary.get(word) }));
             
         } else {
             res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
@@ -66,7 +66,7 @@ class Server {
         }
     }
 
-    #handlePost(req, res, reqUrl) {
+    async #handlePost(req, res, reqUrl) {
         // Increment request count
         this.#requestCount++;
 
@@ -76,11 +76,12 @@ class Server {
             return;
         }
         // Get word from request
-        const body = JSON.parse(req.JSON);
+        const body = await this.#parseBody(req);
+
         // Handle words already existing
-        if (this.#definitions.has(body.word)) {
+        if (this.#dictionary.has(body.word)) {
             res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
-            res.end(JSON.stringify({ message: `Error, the word '${body.word}' already exists` }));
+            res.end(JSON.stringify({ message: `Warning! '${body.word}' already exists` }));
             return;
         }
         // Check if word is valid
@@ -90,11 +91,22 @@ class Server {
             return;
         }
         // Add to definitions
-        this.#definitions.add(body.word, body.definition);
-        res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });        
+        this.#dictionary.set(body.word, body.definition);
+        // Get current month and day
+        const date = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" });
+        // Send response
+        res.writeHead(200, { [Server.contentType.type]: Server.contentType.json });
         res.end(JSON.stringify(
-            { message: `Request #${this.#requestCount}, definition for '${body.word}' added (Updated at ${new Date().getMonth()}${new Date().getDay()}). Total entries ${this.#definitions.size}` }
+            { message: `Request #${this.#requestCount} (Updated at ${date}, Total Entries = ${this.#dictionary.size}): Added '${body.word}' - ${body.definition}` }
         ));
+    }
+
+    #parseBody(req) {
+        return new Promise((res, rej) => {
+            let body = "";
+            req.on("data", chunk => body += chunk);
+            req.on("end", () => res(JSON.parse(body)));
+        });
     }
 
     #setupCORSHeader(res) {
