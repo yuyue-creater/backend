@@ -30,12 +30,19 @@ class Utils {
 
             // Set up what to do after response
             xhr.onload = () => {
-                if (xhr.readyState !== 4 || xhr.status !== 200) return null;
+                if (xhr.status !== 200) {
+                    responseLabel.innerHTML = storeErrorText;
+                    return;
+                }
                 // Set the response label
                 const message = JSON.parse(xhr.response).message;
                 if (message) responseLabel.innerHTML = message;
                 else responseLabel.innerHTML = storeErrorText;
             }
+            // Set up error handling
+            xhr.timeout = 4000; // 5 seconds
+            xhr.onerror = () => responseLabel.innerHTML = storeErrorText;
+
             xhr.send(JSON.stringify({ word: word, definition: definition }));
 
         } catch (e) {
