@@ -13,8 +13,5 @@ document.getElementById("submit").addEventListener("click", async (event) => {
         return;
     }
     Utils.clearElements(responseLabel);
-
-    const result = await Utils.post(word, definition);
-    if (result) responseLabel.innerHTML = result.message;
-    else responseLabel.innerHTML = "An error occurred, could not store definition to server";
+    Utils.post(word, definition, responseLabel); // Will set the response label
 });
