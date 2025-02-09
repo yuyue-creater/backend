@@ -8,7 +8,7 @@ document.getElementById("submit").addEventListener("click", async (event) => {
 
     const word = searchbar.value;
     if (!Utils.isValid(word)) {
-        definitionLabel.innerText = "Search cannot be empty and cannot contain numbers";
+        definitionLabel.innerHTML = "Search cannot be empty and cannot contain numbers";
         return;
     }
     Utils.clearElements(wordLabel, definitionLabel);
